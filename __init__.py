@@ -11,7 +11,7 @@ from modules.fermenter import FermenterView
 
 def get_config():
     config = {}
-    config['auto_start_fermenter_enabled'] = get_param("auto_start_fermenter_enabled", "YES", "select", "Autostart fermenters on CBPi startup?", '["YES", "NO"]')
+    config['auto_start_fermenter_enabled'] = get_param("auto_start_fermenter_enabled", "YES", "select", "Autostart fermenters on CBPi startup?", ["YES", "NO"])
     config['auto_start_fermenter_list'] = get_param("auto_start_fermenter_list", "1", "text", "Autostart fermenters in this list (comma separated list)")
     return config
 
@@ -34,10 +34,11 @@ def init(cbpi):
         log("\tAuto Start not enabled.")
         return
 
-    fermenter_ids = [int(fid.strip()) for fid in config['auto_start_fermenter_list'].split(',')]
-    if not fermenter_ids:
+    if 'auto_start_fermenter_list' not in config or len(config['auto_start_fermenter_list'].strip()) == 0:
         log("\tFermenter list is empty. Please set the auto_start_fermenter_list parameter.")
         return
+
+    fermenter_ids = [int(fid.strip()) for fid in config['auto_start_fermenter_list'].split(',')]
 
     for fid in fermenter_ids:
         fermenter = FermenterView().get_fermenter(fid)
